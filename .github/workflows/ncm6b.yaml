@@ -1,0 +1,51 @@
+name: NCM6B U-Boot CI runner
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    permissions: write-all
+    name: ncm6b-u-boot runner
+    runs-on: ubuntu-latest
+
+    env:
+      UBOOT_REPO: https://github.com/edgeble/u-boot.git
+      RKBIN_REPO: https://github.com/edgeble-sdk/rkbin.git
+      RKBIN_DIR: rkbin/bin/rk35
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v1
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt install -y gcc make gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu
+          pip3 install pyelftools
+
+      - name: Clone U-boot repo
+        run: |
+          mkdir -p u-boot-ncm6b && cd u-boot-ncm6b
+          git clone $UBOOT_REPO -b master
+          git clone $RKBIN_REPO -b linux-6.1-stan-rkr1
+          export ARCH=arm64
+          export CROSS_COMPILE=aarch64-linux-gnu-
+          cd u-boot
+          export BL31=../$RKBIN_DIR/rk3588_bl31_v1.44.elf
+          export ROCKCHIP_TPL=../$RKBIN_DIR/rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.15.bin
+          make neu6a-io-rk3588_defconfig
+          make -j12
+
+      - name: Upload output artifacts
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: "v2024.05"
+          files: |
+            u-boot-ncm6b/u-boot/idbloader.img
+            u-boot-ncm6b/u-boot/u-boot.itb
+            u-boot-ncm6b/u-boot/u-boot-rockchip.bin
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
