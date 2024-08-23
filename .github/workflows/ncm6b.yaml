@@ -36,13 +36,13 @@ jobs:
           cd u-boot
           export BL31=../$RKBIN_DIR/rk3588_bl31_v1.44.elf
           export ROCKCHIP_TPL=../$RKBIN_DIR/rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.15.bin
-          make neu6a-io-rk3588_defconfig
+          make neu6b-io-rk3588_defconfig
           make -j12
 
       - name: Upload output artifacts
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: "v2024.05"
+          tag_name: "v2024.05_neu6b"
           files: |
             u-boot-ncm6b/u-boot/idbloader.img
             u-boot-ncm6b/u-boot/u-boot.itb
