@@ -42,7 +42,7 @@ jobs:
       - name: Upload output artifacts
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: "v2024.05_neu6b"
+          tag_name: "v2024.05_neu6b_R0"
           files: |
             u-boot-ncm6b/u-boot/idbloader.img
             u-boot-ncm6b/u-boot/u-boot.itb
